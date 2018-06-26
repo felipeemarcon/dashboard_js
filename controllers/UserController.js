@@ -31,7 +31,7 @@ class UserController {
 
       let values = this.getValues(this.formUpdateEl);
 
-      let index = this.formUpdateEl.dataset.trIndex
+      let index = this.formUpdateEl.dataset.trIndex;
 
       let tr = this.tableEl.rows[index];
 
@@ -49,21 +49,11 @@ class UserController {
             result._photo = content;
           }
 
-          tr.dataset.user = JSON.stringify(result);
+          let user = new User();
 
-          tr.innerHTML = `
-            <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
-            <td>${result._name}</td>
-            <td>${result._email}</td>
-            <td>${(result._admin) ? 'Sim' : 'Não'}</td>
-            <td>${Utils.dateFormat(result._register)}</td>
-            <td>
-              <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-              <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-            </td>
-          `;
+          user.loadFromJSON(result);
 
-          this.addEventsTr(tr);
+          this.getTr(user, tr);
 
           this.updateCount();
 
@@ -170,10 +160,10 @@ class UserController {
 
       if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
 
-        field.parentElement.classList.add('has-error')
+        field.parentElement.classList.add('has-error');
 
         setTimeout(() => {
-          field.parentElement.classList.remove('has-error')
+          field.parentElement.classList.remove('has-error');
         }, 1000);
 
         isValid = false;
@@ -256,7 +246,17 @@ class UserController {
 
   addLine(dataUser) {
 
-    let tr = document.createElement('tr');
+    let tr = this.getTr(dataUser);
+
+    this.tableEl.appendChild(tr);
+
+    this.updateCount();
+
+  }
+
+  getTr(dataUser, tr = null){
+
+    if (tr === null) tr = document.createElement('tr');
 
     tr.dataset.user = JSON.stringify(dataUser);
 
@@ -272,11 +272,9 @@ class UserController {
       </td>
   `;
 
-    this.addEventsTr(tr);
+  this.addEventsTr(tr);
 
-    this.tableEl.appendChild(tr);
-
-    this.updateCount();
+  return tr;
 
   }
 
